@@ -88,6 +88,17 @@ select{width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);b
     <div class="grid" id="out" hidden></div>
     <div id="hudBox" hidden></div>
     <button class="btn ghost" id="copy" hidden>Copiar valores</button>
+    <div id="fino">
+      <h2 style="margin-top:16px">Corrigir minha mira</h2>
+      <p>Teste no treino e toque no que aconteceu. A sensi é gerada de novo com o ajuste e ele fica salvo.</p>
+      <div class="grid">
+        <button class="btn ghost" id="fPeito" style="margin-top:0">Ficou no peito (+2)</button>
+        <button class="btn ghost" id="fPassou" style="margin-top:0">Passou da cabeça (-5)</button>
+        <button class="btn ghost" id="fTrem" style="margin-top:0">Tremendo (-3)</button>
+        <button class="btn ghost" id="fZero" style="margin-top:0">Zerar ajuste</button>
+      </div>
+      <p class="note">Ajuste atual: <b id="adjV">0</b> pontos em todas as miras.</p>
+    </div>
     <p class="note" id="note" hidden>Ponto de partida, não garantia. O perfil Full vermelho sobe tudo 10% e deixa a mira bem rápida: se passar da cabeça, reduza 5 na Geral e no Ponto vermelho. Se ficar no peito, aumente 2 em 2. Coloque os valores em Configurações > Sensibilidade.</p>
   </section>
 <section class="card">
@@ -97,11 +108,61 @@ select{width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);b
     <div id="otList"></div>
     <div class="stats"><span>Feito: <b id="otP">0%</b></span></div>
   </section>
-<button id="cpl" hidden></button></main>
+<section class="card" id="real">
+    <h2>Otimização real (só no app)</h2>
+    <p id="realNote">Estes botões agem de verdade no seu celular. Liberam memória, calam notificações e abrem as telas certas do Android, mas não dão FPS extra nem mudam o jogo.</p>
+    <div class="grid" id="st"></div>
+    <button class="btn ghost" id="bSt">Ver status do celular</button>
+    <button class="btn" id="bDet">Detectar meu celular e gerar a sensi</button>
+    <button class="btn" id="bRam">Liberar RAM (fechar apps em segundo plano)</button>
+    <div class="row"><button class="btn ghost" id="bDndOn" style="flex:1;margin-top:0">Ligar Não perturbe</button><button class="btn ghost" id="bDndOff" style="flex:1;margin-top:0">Desligar</button></div>
+    <p class="note">O Não perturbe evita notificações no meio da partida (alarmes e contatos favoritos ainda tocam). Na primeira vez o Android pede para você liberar o acesso.</p>
+    <label class="ck"><input type="checkbox" id="chkDnd"> Ligar o Não perturbe ao tocar em Preparar e abrir</label>
+    <button class="btn" id="bJog">Preparar e abrir Free Fire</button>
+    <h2 style="margin-top:18px">Atalhos das configurações</h2>
+    <div class="grid">
+      <button class="btn ghost" id="bBat" style="margin-top:0">Economia de bateria</button>
+      <button class="btn ghost" id="bFf" style="margin-top:0">Cache do Free Fire</button>
+      <button class="btn ghost" id="bTela" style="margin-top:0">Tela e taxa de atualização</button>
+      <button class="btn ghost" id="bWifi" style="margin-top:0">Wi-Fi</button>
+      <button class="btn ghost" id="bArm" style="margin-top:0">Armazenamento</button>
+      <button class="btn ghost" id="bDev" style="margin-top:0">Opções do desenvolvedor</button>
+    </div>
+    <p class="note">Dica: nas Opções do desenvolvedor, deixar as três escalas de animação em 0,5x ou desligadas deixa o celular mais ágil. Se não abrir, ative tocando 7 vezes em Configurações > Sobre o telefone > Número da versão.</p>
+    <p class="note" id="msg"></p>
+  </section>
+  <section class="card" id="sess">
+    <h2>Sessão de jogo</h2>
+    <p>Controle o tempo que você está jogando. A cada 60 minutos o app lembra de fazer uma pausa.</p>
+    <div class="stats"><span>Tempo: <b id="tm">00:00</b></span><span>Partidas: <b id="pt">0</b></span></div>
+    <button class="btn" id="sIni">Iniciar sessão</button>
+    <button class="btn ghost" id="sPt">+1 partida</button>
+    <button class="btn ghost" id="sFim">Encerrar sessão</button>
+    <p class="note" id="sMsg"></p>
+  </section>
+  <section class="card" id="mt">
+    <h2>Teste de multitoque</h2>
+    <p>Toque na área com 2, 3 ou 4 dedos ao mesmo tempo e veja quantos o celular reconhece. Ajuda a escolher o HUD de 3 ou 4 dedos.</p>
+    <div class="arena" id="mtA" style="height:160px"></div>
+    <div class="stats"><span>Agora: <b id="mtN">0</b></span><span>Máximo: <b id="mtM">0</b></span></div>
+    <button class="btn ghost" id="mtR">Zerar</button>
+    <p class="note" id="mtT">Use no celular. No computador não funciona.</p>
+  </section>
+  <button id="cpl" hidden></button></main>
 
 <script>
 (function(){
   var $=function(i){return document.getElementById(i)};
+
+  /* Ajuste fino salvo */
+  var ADJ=0;try{ADJ=parseInt(localStorage.getItem('adj')||'0',10)||0}catch(e){}
+  function showAdj(){$('adjV').textContent=(ADJ>0?'+':'')+ADJ}
+  function saveAdj(){try{localStorage.setItem('adj',String(ADJ))}catch(e){}showAdj();if($('brand').value||$('mode').value!=='cel')$('gen').click()}
+  showAdj();
+  $('fPeito').onclick=function(){ADJ+=2;saveAdj()};
+  $('fPassou').onclick=function(){ADJ-=5;saveAdj()};
+  $('fTrem').onclick=function(){ADJ-=3;saveAdj()};
+  $('fZero').onclick=function(){ADJ=0;saveAdj()};
 
   /* Boneco lento (visual) */
   var a1=$('a1'),d=$('dummy'),x=20,y=60,dx=1,dy=0.5;
@@ -189,7 +250,7 @@ select{width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);b
   function wpTxt(g){var d=wpd(g);return 'Perto: '+d.p+' | Escopeta: '+d.e+' | Rifle: '+d.r+' | Longe: '+d.l+' | Sniper: '+d.s}
   function genPc(){
     var dpi=+$('mdpi').value,capa=+$('capa').value,ex=capa*2,G={400:150,800:125,1200:100}[dpi],mob=$('mode').value==='mob',emu=mob?'Celular com teclado e mouse':$('emu').value;
-    var v=[G,G-5,G-15,G-30,G-55,G-20].map(function(n,i){return cl(i<5?(n+ex)*($('full').checked?1.1:1):n)});
+    var v=[G,G-5,G-15,G-30,G-55,G-20].map(function(n,i){return cl(i<5?(n+ex)*($('full').checked?1.1:1)+ADJ:n)});
     var o=$('out');o.innerHTML='';
     v.forEach(function(n,i){var e=document.createElement('div');e.className='v';e.innerHTML='<small>'+names[i]+'</small><b>'+n+'</b>';o.appendChild(e)});
     var tips='<div class="hudt"><b>Emulador: '+emu+' · mouse '+dpi+' DPI</b><br>1. No emulador, teste o DPI do emulador em 240 (o BlueStacks oferece 160, 240 e 320).<br>2. Deixe o mouse em 1000 Hz de polling.<br>3. Em Controles do jogo, ajuste a sensibilidade X e Y do mouse junto com os valores acima.<br>4. Mira no peito: aumente 5. Mira passando da cabeça ou tremendo: reduza 5.<br>Outro método: deixe a Geral em 0 e regule só o X e o Y do emulador.<br>Estes valores são uma estimativa minha para mouse, não uma tabela oficial. Ajuste no treino.</div>';
@@ -219,7 +280,7 @@ select{width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);b
     if(!b){$('brand').focus();return}
     var ti=+$('tier').value,G=base[b][ti],leve=$('leve').checked,capa=+$('capa').value,ex=capa*2,v=[G,G-15,G-30,G-45,G-60,OL[ti]];
     if(leve){v[1]+=3;v[2]+=3;v[3]+=3;v[4]+=3}
-    for(var i=0;i<5;i++){v[i]+=ex;if($('full').checked)v[i]*=1.1}
+    for(var i=0;i<5;i++){v[i]+=ex;if($('full').checked)v[i]*=1.1;v[i]+=ADJ}
     v=v.map(cl);
     var o=$('out');o.innerHTML='';
     v.forEach(function(n,i){
@@ -234,6 +295,149 @@ select{width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);b
     try{navigator.clipboard.writeText(last).then(function(){btn.textContent='Copiado!'})}catch(e){btn.textContent='Copie manualmente'}
     setTimeout(function(){btn.textContent='Copiar valores'},1500);
   };
+})();
+</script>
+<script>
+(function(){
+  var $=function(i){return document.getElementById(i)};
+  var A=window.Android;
+  var ids=['bSt','bDet','bRam','bDndOn','bDndOff','bJog','bBat','bFf','bTela','bWifi','bArm','bDev'];
+  if(!A){
+    $('realNote').textContent='Abra o app instalado no celular para usar. No navegador estes botões não funcionam.';
+    ids.forEach(function(i){$(i).disabled=true;$(i).style.opacity=.5});
+    return;
+  }
+  var REDE={wifi:'Wi-Fi',dados:'Dados móveis',nenhuma:'Sem rede',outra:'Outra'};
+  function cel(t,v){return '<div class="v"><small>'+t+'</small><b style="font-size:1rem">'+v+'</b></div>'}
+  function status(){
+    var s={};try{s=JSON.parse(A.status())}catch(e){}
+    if(!s.ramTotal){$('msg').textContent='Não consegui ler o status.';return s}
+    $('st').innerHTML=cel('RAM livre',s.ramLivre+' / '+s.ramTotal+' MB')+cel('Armazenamento livre',s.armLivre+' GB')+
+      cel('Bateria',s.bateria+'%'+(s.carregando?' (carregando)':''))+cel('Temperatura',s.temp+' °C')+
+      cel('Economia de bateria',s.economia?'Ligada':'Desligada')+cel('Rede',REDE[s.rede]||'?');
+    var a=[];
+    if(s.economia)a.push('Desligue a economia de bateria antes de jogar.');
+    if(s.temp>=40)a.push('Celular quente: deixe esfriar e tire a capinha.');
+    if(s.armLivre<3)a.push('Pouco espaço: libere pelo menos 3 GB.');
+    if(s.ramLivre<800)a.push('Pouca RAM livre: toque em Liberar RAM.');
+    if(s.rede==='dados')a.push('Você está em dados móveis: prefira Wi-Fi estável.');
+    if(s.rede==='nenhuma')a.push('Sem rede no momento.');
+    $('msg').textContent=a.length?a.join(' '):'Tudo certo para jogar.';
+    return s;
+  }
+  function ram(){
+    var r={};try{r=JSON.parse(A.liberarRam())}catch(e){}
+    if(r.erro||r.antes===undefined){$('msg').textContent='Não foi possível liberar a RAM.';return false}
+    $('msg').textContent='RAM livre: '+r.antes+' MB → '+r.depois+' MB. Apps fechados em segundo plano: '+r.apps+'. O Android pode reabrir alguns.';
+    status();
+    return true;
+  }
+  function dnd(l){
+    var r=A.naoPerturbe(l);
+    if(r==='permissao')return 'Libere o acesso ao Não perturbe para este app na tela que abriu e depois toque de novo.';
+    if(r==='ligado')return 'Não perturbe ligado.';
+    if(r==='desligado')return 'Não perturbe desligado.';
+    return 'Não foi possível mudar o Não perturbe.';
+  }
+  function marca(fab,mod){
+    var f=(fab||'').toLowerCase(),m=(mod||'').toLowerCase();
+    if(f.indexOf('motorola')>=0)return 'Motorola';
+    if(f.indexOf('samsung')>=0)return 'Samsung';
+    if(f.indexOf('xiaomi')>=0||f.indexOf('poco')>=0||f.indexOf('redmi')>=0){
+      if(m.indexOf('poco')>=0)return 'Poco';
+      if(m.indexOf('redmi')>=0)return 'Redmi';
+      return 'Xiaomi';
+    }
+    if(f.indexOf('realme')>=0)return 'Realme';
+    if(f.indexOf('infinix')>=0)return 'Infinix';
+    if(f.indexOf('tecno')>=0)return 'Tecno';
+    if(f.indexOf('asus')>=0)return 'Asus ROG';
+    if(f.indexOf('lg')>=0)return 'LG';
+    return 'Outra marca';
+  }
+  var NOMES=['Celular básico','Intermediário','Top intermediário','Topo de linha'];
+  function detectar(){
+    var d={};try{d=JSON.parse(A.aparelho())}catch(e){}
+    if(!d.fab){$('msg').textContent='Não consegui identificar o celular.';return}
+    var br=marca(d.fab,d.modelo);
+    var tier=d.dpi<=360?0:(d.dpi<=420?1:(d.dpi<=480?2:3));
+    if($('mode').value!=='cel'){$('mode').value='cel';$('mode').onchange()}
+    $('brand').value=br;
+    $('tier').value=String(tier);
+    $('gen').click();
+    $('msg').textContent='Detectado: '+d.fab+' '+d.modelo+', Android '+d.android+', tela '+d.dpi+' dpi, '+d.nucleos+' núcleos. '+
+      'Free Fire: '+(d.ff?'versão '+d.ff:'não instalado')+(d.ffmax?' (MAX '+d.ffmax+')':'')+'. '+
+      'Sensi gerada para '+br+' / '+NOMES[tier]+'. O tipo é uma estimativa pela densidade da tela; se não parecer certo, troque no seletor e gere de novo. Veja os valores no card Gerar sensi.';
+    $('gen').scrollIntoView();
+  }
+  $('bSt').onclick=status;
+  $('bDet').onclick=detectar;
+  $('bRam').onclick=ram;
+  $('bDndOn').onclick=function(){$('msg').textContent=dnd(true)};
+  $('bDndOff').onclick=function(){$('msg').textContent=dnd(false)};
+  $('bBat').onclick=function(){A.abrir('bateria')};
+  $('bFf').onclick=function(){$('msg').textContent='Na tela que abrir: Armazenamento > Limpar cache. Não toque em Limpar dados.';A.abrir('ff')};
+  $('bTela').onclick=function(){A.abrir('tela')};
+  $('bWifi').onclick=function(){A.abrir('wifi')};
+  $('bArm').onclick=function(){A.abrir('armazenamento')};
+  $('bDev').onclick=function(){A.abrir('dev')};
+  $('bJog').onclick=function(){
+    var ok=ram(),extra='';
+    if($('chkDnd').checked)extra=' '+dnd(true);
+    $('msg').textContent=$('msg').textContent+extra;
+    A.abrir('jogar');
+  };
+  status();
+})();
+</script>
+<script>
+(function(){
+  var $=function(i){return document.getElementById(i)};
+  function get(k){try{return localStorage.getItem(k)}catch(e){return null}}
+  function put(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+  function del(k){try{localStorage.removeItem(k)}catch(e){}}
+  var warned=0;
+  function pad(n){return n<10?'0'+n:''+n}
+  function tick(){
+    var s=parseInt(get('ssIni')||'0',10);
+    $('pt').textContent=get('ssPt')||'0';
+    if(!s){$('tm').textContent='00:00';return}
+    var seg=Math.floor((Date.now()-s)/1000),min=Math.floor(seg/60);
+    $('tm').textContent=pad(Math.floor(min/60))+':'+pad(min%60);
+    var bloco=Math.floor(min/60);
+    if(bloco>=1&&bloco>warned){
+      warned=bloco;
+      $('sMsg').textContent='Voc\u00ea est\u00e1 jogando h\u00e1 '+min+' minutos. Fa\u00e7a uma pausa, beba \u00e1gua e descanse as m\u00e3os.';
+    }
+  }
+  $('sIni').onclick=function(){put('ssIni',String(Date.now()));put('ssPt','0');warned=0;$('sMsg').textContent='Sess\u00e3o iniciada.';tick()};
+  $('sPt').onclick=function(){if(!get('ssIni')){$('sMsg').textContent='Inicie a sess\u00e3o primeiro.';return}put('ssPt',String((parseInt(get('ssPt')||'0',10))+1));tick()};
+  $('sFim').onclick=function(){
+    var s=parseInt(get('ssIni')||'0',10),p=get('ssPt')||'0';
+    if(!s){$('sMsg').textContent='Nenhuma sess\u00e3o em andamento.';return}
+    var min=Math.floor((Date.now()-s)/60000);
+    $('sMsg').textContent='Sess\u00e3o encerrada: '+min+' minutos e '+p+' partidas.';
+    del('ssIni');del('ssPt');warned=0;tick();
+  };
+  setInterval(tick,1000);tick();
+
+  var mx=0,A=$('mtA');
+  function toques(e){
+    e.preventDefault();
+    var t=e.touches,n=t.length,r=A.getBoundingClientRect(),h='';
+    for(var i=0;i<n;i++){
+      h+='<div style="position:absolute;left:'+(t[i].clientX-r.left-22)+'px;top:'+(t[i].clientY-r.top-22)+'px;width:44px;height:44px;border-radius:50%;background:rgba(255,106,0,.35);border:2px solid #ff6a00"></div>';
+    }
+    A.innerHTML=h;
+    $('mtN').textContent=n;
+    if(n>mx){mx=n;$('mtM').textContent=mx;
+      $('mtT').textContent=mx>=4?'Seu celular reconhece 4 ou mais dedos: d\u00e1 para usar o HUD de 4 dedos.':
+        (mx===3?'Reconhece 3 dedos: o HUD de 3 dedos funciona. Teste com 4 para ver se aguenta mais.':
+        'Reconhece at\u00e9 '+mx+' dedo(s). Teste com mais dedos; se parar em 2, prefira o HUD de 2 dedos.');
+    }
+  }
+  ['touchstart','touchmove','touchend','touchcancel'].forEach(function(ev){A.addEventListener(ev,toques,{passive:false})});
+  $('mtR').onclick=function(){mx=0;$('mtM').textContent='0';$('mtN').textContent='0';A.innerHTML=''};
 })();
 </script>
 </body>
