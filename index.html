@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Treino de Mira e Sensi</title>
+<style>
+:root{--bg:#f4f4f6;--card:#fff;--text:#16161a;--muted:#6a6a75;--accent:#ff6a00;--arena:#e6e6ea;--line:#d6d6dc;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light dark}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f0f12;--card:#1a1a20;--text:#f2f2f5;--muted:#9a9aa6;--arena:#101014;--line:#2c2c35}}
+:root[data-theme="dark"]{--bg:#0f0f12;--card:#1a1a20;--text:#f2f2f5;--muted:#9a9aa6;--arena:#101014;--line:#2c2c35}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:20px 16px 40px}
+main{max-width:520px;margin:0 auto;display:grid;gap:20px}
+h1{font-size:1.5rem;margin:8px 0 0;text-align:center}
+.sub{color:var(--muted);text-align:center;margin:0;font-size:.9rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px}
+h2{margin:0 0 4px;font-size:1.15rem}
+.card p{margin:0 0 12px;color:var(--muted);font-size:.9rem}
+.arena{position:relative;height:190px;background:var(--arena);border-radius:12px;overflow:hidden;touch-action:none;user-select:none;border:1px solid var(--line)}
+.t{position:absolute;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;font-size:30px}
+#dummy{background:rgba(255,106,0,.2);border:2px solid var(--accent)}
+#track{background:rgba(255,106,0,.2);border:2px dashed var(--accent)}
+.stats{display:flex;justify-content:space-between;margin:10px 0 0;font-weight:600}
+.btn{display:block;width:100%;margin-top:12px;padding:14px;border:0;border-radius:12px;background:var(--accent);color:#fff;font-size:1rem;font-weight:700;text-align:center;text-decoration:none;cursor:pointer;font-family:inherit}
+.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px}
+.row label{font-weight:600;font-size:.95rem}
+.sw{appearance:none;width:48px;height:28px;border-radius:14px;background:var(--line);position:relative;cursor:pointer;border:0;flex:none}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:left .15s}
+.sw:checked{background:var(--accent)}
+.sw:checked::after{left:23px}
+input[type=range]{width:100%;accent-color:var(--accent)}
+select{width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:1rem;font-family:inherit}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.v{background:var(--arena);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}
+.v small{display:block;color:var(--muted);font-size:.75rem}
+.v b{font-size:1.4rem;color:var(--accent)}
+.note{font-size:.78rem;color:var(--muted);margin-top:10px}
+[hidden]{display:none!important}
+.ck{display:flex;gap:10px;align-items:flex-start;margin-top:10px;font-size:.9rem;line-height:1.4}
+.ck input{margin-top:3px;accent-color:var(--accent);flex:none}
+.hud{position:relative;height:170px;margin-top:12px;background:var(--arena);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.hb{position:absolute;transform:translate(-50%,-50%);border-radius:50%;border:2px solid var(--muted);display:grid;place-items:center;font-size:.6rem;text-align:center;line-height:1.1;color:var(--text);background:rgba(128,128,128,.15)}
+.hb.f{border-color:var(--accent);background:rgba(255,106,0,.25);font-weight:700}
+.stick{position:absolute;transform:translate(-50%,-50%);width:70px;height:70px;border-radius:50%;border:2px dashed var(--line)}
+.hudt{margin-top:10px;font-size:.88rem;color:var(--muted);line-height:1.5}.hudt b{color:var(--text)}
+</style>
+</head>
+<body>
+<main>
+  <h1>🎯 Treino de Mira e Sensi</h1>
+  <p class="sub">Visual e guia de sensibilidade. Não altera o jogo.</p>
+
+  <section class="card">
+    <h2>Boneco lento</h2>
+    <p>Efeito visual: veja o boneco andando devagar ou normal.</p>
+    <div class="arena" id="a1"><div class="t" id="dummy">🧍</div></div>
+    <div class="row"><label for="slow">Boneco lento</label><input type="checkbox" class="sw" id="slow" checked></div>
+    <select id="ver" hidden style="margin-top:12px"><option value="com.dts.freefireth">Free Fire</option><option value="com.dts.freefiremax">Free Fire MAX</option></select>
+    <a class="btn" id="open" href="intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=com.dts.freefireth;end">Abrir Free Fire</a>
+    <p class="note">Abre o Free Fire direto, se ele estiver instalado no celular.</p>
+  </section>
+
+  <section class="card">
+    <h2>Estabilizar a mira</h2>
+    <p>Deixa a mira mais leve e puxa mais capa em todas as armas. Isso muda os valores da sensi gerada abaixo.</p>
+    <div class="arena" id="a2"><div class="t" id="track">⌖</div></div>
+    <div class="stats"><span>Tempo no alvo: <b id="pct">0%</b></span><span>Melhor: <b id="best">0%</b></span></div>
+    <div class="row"><label for="leve">Mira leve</label><input type="checkbox" class="sw" id="leve" checked></div>
+    <div class="row" style="display:block"><label for="capa">Puxar capa: <b id="capaV">4</b>/5</label><input type="range" id="capa" min="0" max="5" value="4"></div>
+  </section>
+
+  <section class="card">
+    <h2>Gerar sensi xitada</h2>
+    <p>Escolha a marca, o tipo do celular e quantos dedos usa. Os valores usam a escala nova do jogo (0 a 200), baseados em sensis de referência de 2026 por celular.</p>
+    <select id="mode" style="margin-bottom:8px"><option value="cel">Modo celular</option><option value="pc">Modo emulador (PC)</option><option value="mob">Modo mobilador (celular + teclado e mouse)</option></select>
+    <select id="brand">
+      <option value="">Escolha a marca</option>
+      <option>Samsung</option><option>Xiaomi</option><option>Redmi</option><option>Poco</option>
+      <option>Motorola</option><option>Realme</option><option>Infinix</option><option>Tecno</option>
+      <option>iPhone</option><option>Asus ROG</option><option>LG</option><option>Outra marca</option>
+    </select>
+    <select id="tier" style="margin-top:8px"><option value="0">Celular básico (ex.: Galaxy A14, Moto G24, Poco M6)</option><option value="1" selected>Intermediário (ex.: Galaxy A36, Poco X7, Redmi Note 14)</option><option value="2">Top intermediário (ex.: Galaxy S23, Xiaomi 14T, iPhone 14)</option><option value="3">Topo de linha (ex.: S25 Ultra, Xiaomi 14 Ultra, iPhone Pro Max)</option></select>
+    <select id="dedos" style="margin-top:8px"><option value="2">HUD 2 dedos</option><option value="3" selected>HUD 3 dedos</option><option value="4">HUD 4 dedos</option></select>
+    <div id="pcBox" hidden><select id="mdpi" style="margin-top:8px"><option value="400">Mouse 400 DPI</option><option value="800" selected>Mouse 800 DPI</option><option value="1200">Mouse 1200 DPI ou mais</option></select><select id="emu" style="margin-top:8px"><option>BlueStacks</option><option>LDPlayer</option><option>MSI App Player</option><option>MEmu</option><option>Outro emulador</option></select></div>
+    <div class="row"><label for="full">Full vermelho (perfil xitada, +10%)</label><input type="checkbox" class="sw" id="full" checked></div>
+    <button class="btn" id="gen">Gerar sensi xitada + HUD</button>
+    <div class="grid" id="out" hidden></div>
+    <div id="hudBox" hidden></div>
+    <button class="btn ghost" id="copy" hidden>Copiar valores</button>
+    <p class="note" id="note" hidden>Ponto de partida, não garantia. O perfil Full vermelho sobe tudo 10% e deixa a mira bem rápida: se passar da cabeça, reduza 5 na Geral e no Ponto vermelho. Se ficar no peito, aumente 2 em 2. Coloque os valores em Configurações > Sensibilidade.</p>
+  </section>
+<section class="card">
+    <h2>Otimizar celular e PC</h2>
+    <p>Um site não consegue limpar nem acelerar seu aparelho sozinho. Escolha o aparelho, siga os passos e marque o que já fez.</p>
+    <select id="otDev"><option value="cel">Celular</option><option value="pc">PC (emulador)</option></select>
+    <div id="otList"></div>
+    <div class="stats"><span>Feito: <b id="otP">0%</b></span></div>
+  </section>
+<button id="cpl" hidden></button></main>
+
+<script>
+(function(){
+  var $=function(i){return document.getElementById(i)};
+
+  /* Boneco lento (visual) */
+  var a1=$('a1'),d=$('dummy'),x=20,y=60,dx=1,dy=0.5;
+  function loop1(){
+    var k=$('slow').checked?0.6:3.2;
+    var w=a1.clientWidth-56,h=a1.clientHeight-56;
+    x+=dx*k;y+=dy*k;
+    if(x<0){x=0;dx=-dx}if(x>w){x=w;dx=-dx}
+    if(y<0){y=0;dy=-dy}if(y>h){y=h;dy=-dy}
+    d.style.left=x+'px';d.style.top=y+'px';
+    requestAnimationFrame(loop1);
+  }
+  loop1();
+
+  /* Treino de mira */
+  var a2=$('a2'),t=$('track'),px=-999,py=-999,on=0,total=0,best=0,tt=0;
+  function pos(e){var r=a2.getBoundingClientRect();px=e.clientX-r.left;py=e.clientY-r.top}
+  a2.addEventListener('pointermove',pos);a2.addEventListener('pointerdown',pos);
+  a2.addEventListener('pointerleave',function(){px=-999;py=-999});
+  function loop2(){
+    var w=a2.clientWidth,h=a2.clientHeight;tt+=0.02;
+    var cx=w/2+Math.sin(tt*1.1)*(w/2-40),cy=h/2+Math.cos(tt*1.7)*(h/2-40);
+    t.style.left=(cx-28)+'px';t.style.top=(cy-28)+'px';
+    total++;if(Math.hypot(px-cx,py-cy)<30)on++;
+    var p=Math.round(on/total*100);if(total>120&&p>best)best=p;
+    $('pct').textContent=p+'%';$('best').textContent=best+'%';
+    if(total>1500){on=0;total=0}
+    requestAnimationFrame(loop2);
+  }
+  loop2();
+
+  $('capa').oninput=function(){$('capaV').textContent=this.value};
+  $('mode').onchange=function(){
+    var pc=this.value!=='cel';
+    ['brand','tier','dedos'].forEach(function(i){$(i).hidden=pc});
+    $('pcBox').hidden=!pc;$('emu').hidden=this.value==='mob';$('out').hidden=true;$('hudBox').hidden=true;$('copy').hidden=true;$('note').hidden=true;
+  };
+  var OT={
+    cel:['Feche os apps abertos em segundo plano','Deixe pelo menos 3 GB de armazenamento livre','Ative o modo jogo (Game Turbo, Game Booster ou parecido)','Desative a economia de bateria enquanto joga','Nos gráficos do jogo, use Suave com FPS alto (se esquentar, baixe)','Atualize o Free Fire e o sistema do celular','Use Wi-Fi estável e pause downloads e atualizações','Tire a capinha e jogue em lugar fresco se o celular esquenta','Limpe o cache do Free Fire (Configurações > Apps > Free Fire > Armazenamento > Limpar cache, não os dados)','Reinicie o celular antes de sessões longas'],
+    pc:['Ative a virtualização (VT-x ou AMD-V) na BIOS','Dê ao emulador pelo menos 4 núcleos e 4 GB de RAM','Coloque o plano de energia do Windows em Alto desempenho','Atualize o driver da placa de vídeo','Feche navegador e programas pesados antes de jogar','Instale o emulador em um SSD','Ative o Modo de Jogo do Windows','Use 60 FPS ou mais no emulador, conforme o PC aguentar','Prefira cabo de rede ao Wi-Fi quando der','Deixe o mouse com polling de 1000 Hz']
+  };
+  function otRender(){
+    var l=OT[$('otDev').value],h='';
+    l.forEach(function(t){h+='<label class="ck"><input type="checkbox"> '+t+'</label>'});
+    $('otList').innerHTML=h;$('otP').textContent='0%';
+    $('otList').querySelectorAll('input').forEach(function(c){
+      c.onchange=function(){
+        var all=$('otList').querySelectorAll('input'),n=0;
+        all.forEach(function(x){if(x.checked)n++});
+        $('otP').textContent=Math.round(n/all.length*100)+'%';
+      };
+    });
+  }
+  $('otDev').onchange=otRender;otRender();
+  function go(u){try{window.top.location.href=u}catch(e){}setTimeout(function(){location.href=u},200)}
+  
+  $('cpl').onclick=function(){
+    var b=this,u='https://claude.ai/artifact/LGooKaERDygEF89b9hYWgL';
+    try{navigator.clipboard.writeText(u).then(function(){b.textContent='Link copiado!'},function(){prompt('Copie o link:',u)})}catch(e){prompt('Copie o link:',u)}
+    setTimeout(function(){b.textContent='Copiar link pra abrir no Chrome'},2000);
+  };
+  $('ver').onchange=function(){
+    $('open').href='intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package='+this.value+';end';
+  };
+
+  /* Gerador de sensi: [Geral, Ponto vermelho, Mira 2x, Mira 4x, AWM, Olhar livre] */
+  var base={
+    'Samsung':[188,174,165,145],'Xiaomi':[185,176,165,148],'Redmi':[185,176,165,148],
+    'Poco':[181,178,165,148],'Motorola':[188,174,165,148],'Realme':[186,175,165,148],
+    'Infinix':[188,175,165,148],'Tecno':[188,175,165,148],'iPhone':[162,166,170,180],
+    'Asus ROG':[185,175,165,146],'LG':[185,175,165,148],'Outra marca':[185,175,165,148]
+  };
+  var OL=[19,18,17,15],BT=[85,68,56,50];
+  var names=['Geral','Ponto vermelho','Mira 2x','Mira 4x','AWM','Olhar livre'];
+  var last='';
+  function cl(n){return Math.max(0,Math.min(200,Math.round(n)))}
+  var WP='<div class="hudt" style="margin-top:14px"><b>Melhores armas pra essa sensi</b><br>Perto: <b>MP40, UMP, Thompson</b><br>Escopeta: <b>M1887, M1014</b><br>Rifle: <b>M4A1, SCAR, Groza</b><br>Longe: <b>SVD, Woodpecker</b><br>Sniper: <b>AWM, Kar98k</b></div>';
+  function wpd(g){
+    if(g>=180)return {n:'sensi alta',p:'MP40, UMP',e:'M1887',r:'SCAR, M4A1',l:'Woodpecker',s:'AWM',t:'Sensi alta puxa rápido: use armas de recuo baixo e tiro rápido, que não fogem do alvo.'};
+    if(g>=170)return {n:'sensi média-alta',p:'MP40, UMP',e:'M1887, M1014',r:'SCAR, Groza',l:'Woodpecker, M14',s:'AWM',t:'Dá pra usar rifles de dano alto, mas puxe com calma pra não passar da cabeça.'};
+    if(g>=160)return {n:'sensi média',p:'UMP, MP40',e:'M1887',r:'Groza, SCAR, AK',l:'M14, Woodpecker',s:'AWM, Kar98k',t:'Controle bom pra armas com mais recuo e mais dano.'};
+    return {n:'sensi baixa',p:'MP40, UMP',e:'M1887',r:'AK, Groza',l:'M14, Woodpecker',s:'AWM, M82B',t:'Sensi mais baixa dá controle fino e aguenta armas de recuo maior e mais dano.'};
+  }
+  function wp(g){var d=wpd(g);return '<div class="hudt" style="margin-top:14px"><b>Melhores armas pra essa sensi ('+d.n+')</b><br>Perto (ponto vermelho): <b>'+d.p+'</b><br>Escopeta (geral): <b>'+d.e+'</b><br>Rifle (mira 2x): <b>'+d.r+'</b><br>Longe (mira 4x): <b>'+d.l+'</b><br>Sniper (AWM): <b>'+d.s+'</b><br>'+d.t+' O equilíbrio das armas muda nas atualizações, então teste no treino.</div>'}
+  function wpTxt(g){var d=wpd(g);return 'Perto: '+d.p+' | Escopeta: '+d.e+' | Rifle: '+d.r+' | Longe: '+d.l+' | Sniper: '+d.s}
+  function genPc(){
+    var dpi=+$('mdpi').value,capa=+$('capa').value,ex=capa*2,G={400:150,800:125,1200:100}[dpi],mob=$('mode').value==='mob',emu=mob?'Celular com teclado e mouse':$('emu').value;
+    var v=[G,G-5,G-15,G-30,G-55,G-20].map(function(n,i){return cl(i<5?(n+ex)*($('full').checked?1.1:1):n)});
+    var o=$('out');o.innerHTML='';
+    v.forEach(function(n,i){var e=document.createElement('div');e.className='v';e.innerHTML='<small>'+names[i]+'</small><b>'+n+'</b>';o.appendChild(e)});
+    var tips='<div class="hudt"><b>Emulador: '+emu+' · mouse '+dpi+' DPI</b><br>1. No emulador, teste o DPI do emulador em 240 (o BlueStacks oferece 160, 240 e 320).<br>2. Deixe o mouse em 1000 Hz de polling.<br>3. Em Controles do jogo, ajuste a sensibilidade X e Y do mouse junto com os valores acima.<br>4. Mira no peito: aumente 5. Mira passando da cabeça ou tremendo: reduza 5.<br>Outro método: deixe a Geral em 0 e regule só o X e o Y do emulador.<br>Estes valores são uma estimativa minha para mouse, não uma tabela oficial. Ajuste no treino.</div>';
+    if(mob)tips='<div class="hudt"><b>Mobilador · mouse '+dpi+' DPI</b><br>Aviso: o mobilador usa apps de terceiros para o jogo reconhecer teclado e mouse, e a Garena pode banir a conta e até o aparelho. Se for jogar assim, não use sua conta principal.<br>No app de mapeamento, ajuste a sensibilidade X e Y do mouse junto com os valores acima.<br>Mira no peito: aumente 5. Passando da cabeça ou tremendo: reduza 5.<br>Estes valores são uma estimativa minha, não uma tabela oficial.</div>';
+    o.hidden=false;$('hudBox').innerHTML=tips+wp(G);$('hudBox').hidden=false;$('copy').hidden=false;$('note').hidden=false;
+    last=(mob?'Mobilador':'Emulador '+emu)+' (mouse '+dpi+' DPI):\n'+v.map(function(n,i){return names[i]+': '+n}).join('\n');
+  }
+  function hud(capa,btn,g){
+    var f=$('dedos').value,S=Math.round(btn*{2:1,3:0.85,4:0.75}[f]);
+    var L={
+      2:[['Tiro',84,58,S,1],['Pular',93,22,26],['Agachar',72,88,26],['Recarregar',60,70,24],['Mira',70,28,24]],
+      3:[['Tiro',8,38,S,1],['Tiro',86,55,S,1],['Pular',94,20,26],['Agachar',72,88,26],['Recarregar',62,72,24]],
+      4:[['Tiro',8,42,S,1],['Tiro',88,45,S,1],['Pular',94,14,26],['Recarregar',8,12,24],['Agachar',72,88,26]]
+    }[f];
+    var T={2:'Polegar esquerdo anda, polegar direito mira e atira. Botão de tiro grande.',3:'Indicador esquerdo no tiro, polegares andam e miram. Tiro esquerdo e direito.',4:'Indicador esquerdo no tiro e recarregar, indicador direito no tiro e pular.'}[f];
+    var h='<div class="hud"><div class="stick" style="left:22%;top:72%"></div>';
+    L.forEach(function(b){var d=b[4]?b[3]*0.9:b[3];h+='<div class="hb'+(b[4]?' f':'')+'" style="left:'+b[1]+'%;top:'+b[2]+'%;width:'+d+'px;height:'+d+'px">'+b[0]+(b[4]?'<br>'+b[3]+'%':'')+'</div>'});
+    h+='</div><div class="hudt"><b>HUD '+f+' dedos</b><br>'+T+'<br>Botão de tiro: <b>'+S+'%</b> (maior é mais fácil de arrastar pra capa)<br>Transparência do tiro: <b>70%</b><br>Outros botões: <b>35 a 45%</b></div>';
+    h+=wp(g);
+    $('hudBox').innerHTML=h;$('hudBox').hidden=false;
+    last+='\n\nArmas: '+wpTxt(g);
+    last+='\n\nHUD '+f+' dedos:\nBotão de tiro: '+S+'%\nTransparência: 70%\nOutros botões: 35-45%';
+  }
+  $('gen').onclick=function(){
+    var b=$('brand').value;
+    if($('mode').value!=='cel'){genPc();return}
+    if(!b){$('brand').focus();return}
+    var ti=+$('tier').value,G=base[b][ti],leve=$('leve').checked,capa=+$('capa').value,ex=capa*2,v=[G,G-15,G-30,G-45,G-60,OL[ti]];
+    if(leve){v[1]+=3;v[2]+=3;v[3]+=3;v[4]+=3}
+    for(var i=0;i<5;i++){v[i]+=ex;if($('full').checked)v[i]*=1.1}
+    v=v.map(cl);
+    var o=$('out');o.innerHTML='';
+    v.forEach(function(n,i){
+      var e=document.createElement('div');e.className='v';
+      e.innerHTML='<small>'+names[i]+'</small><b>'+n+'</b>';o.appendChild(e);
+    });
+    last=b+':\n'+v.map(function(n,i){return names[i]+': '+n}).join('\n');
+    o.hidden=false;$('copy').hidden=false;$('note').hidden=false;hud(capa,BT[ti],v[0]);
+  };
+  $('copy').onclick=function(){
+    var btn=this;
+    try{navigator.clipboard.writeText(last).then(function(){btn.textContent='Copiado!'})}catch(e){btn.textContent='Copie manualmente'}
+    setTimeout(function(){btn.textContent='Copiar valores'},1500);
+  };
+})();
+</script>
+</body>
+</html>
